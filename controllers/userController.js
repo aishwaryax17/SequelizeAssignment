@@ -1,13 +1,27 @@
-const { User,Task } = require('../models');
+const { User, Task } = require('../models');
 //create-user
-exports.createUser = async (req, res) => {
-    try {
-        const user = await User.createUser(req.body);
-        res.status(201).json({ success: true, data: user });
-    } catch (err) {
-        res.status(400).json({ success: false, error: err.message });
-    }
-}
+exports.registerUser = async (req, res) => {
+  try {
+    const user = await User.registerUser(req.body);
+    return res.status(201).json({ success: true, data: user });
+  } catch (err) {
+    return res.status(err.status || 500).json({ success: false, error: err.message || 'Something went wrong' });
+  }
+};
+
+//email verification
+exports.verifyEmail = async (req, res) => {
+  try {
+    await User.verifyUserByToken(req.params.token);
+    res.json({ message: 'Email verified successfully' });
+  } catch (err) {
+    res.status(400).json({ message: err.message || 'Invalid or expired token' });
+  }
+};
+
+
+
+
 //display all user
 exports.getAllUsers = async (req, res) => {
     try {
@@ -18,6 +32,45 @@ exports.getAllUsers = async (req, res) => {
         res.status(400).json({ success: false, error: err.message });
     }
 };
+//generate access token using refresh token
+exports.refreshToken = async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    const result = await User.refreshAccessToken(token);
+
+    return res.status(200).json({
+      message: 'Access token refreshed successfully',
+      accessToken: result.accessToken,
+    });
+  } catch (err) {
+    return res.status(err.status || 500).json({
+      message: err.message || 'Something went wrong',
+    });
+  }
+};
+
+
+
+//validate user based on credentials for  login
+
+exports.loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const result = await User.loginUser(email, password);
+
+    return res.status(200).json(result);
+  } catch (err) {
+    return res.status(err.status || 500).json({
+      message: err.message || 'Login failed'
+    });
+  }
+};
+
+
+
+
 //display user by id
 
 exports.getUserById = async (req, res) => {
@@ -60,3 +113,4 @@ exports.getUserTasks = async (req, res) => {
         res.status(404).json({ success: false, error: err.message });
     }
 };
+

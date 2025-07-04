@@ -14,10 +14,17 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         },
         description: DataTypes.TEXT,
+        priority: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
         completed: {
             type: DataTypes.BOOLEAN,
             defaultValue: false
         }
+    }, {
+        paranoid: true, // <-- this enables soft delete
+        deletedAt: 'deletedAt' // (optional) custom column name
     });
 
     //create a new task
@@ -55,12 +62,9 @@ module.exports = (sequelize, DataTypes) => {
     }
     //get user  related to each task
     Task.getUser = async function (taskId) {
-
         const task = await this.findByPk(taskId);
-
         if (!task) throw new Error('Task not found');
-        const user = task.getUser();
-
+        const user = await task.getUser(); // <-- await here!
         return user;
     };
 

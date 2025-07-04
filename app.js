@@ -1,12 +1,12 @@
 const express = require('express');
 const app = express();
 const db = require('./models/index');
-const bodyParser = require('body-parser');
+
 const cors = require('cors');
 require('dotenv').config();
-
+app.use(express.json());
 app.use(cors());
-app.use(bodyParser.json());
+
 
 // Routes
 app.use('/api/users', require('./routes/userRoutes'));
@@ -25,7 +25,7 @@ app.use((err, req, res, next) => {
   });
 })
 
-
+//app.use(errors());
 
 const port = process.env.PORT || 5000;
 

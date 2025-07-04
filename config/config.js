@@ -8,5 +8,14 @@ module.exports = {
     host: "localhost", 
     port: 5432,        
     dialect: 'postgres'
+  },
+  test: {
+    username: 'mytestuser',
+    password: 'mytestpassword',
+    database: 'mytestdb',
+    host: 'localhost',
+    dialect: 'postgres',
+    logging:false,
   }
+
 };
